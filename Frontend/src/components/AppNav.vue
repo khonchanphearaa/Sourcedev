@@ -4,8 +4,8 @@
 
             <!-- Brand -->
             <RouterLink to="/"
-                class="flex items-center gap-2 font-serif font-semibold text-xl text-ink hover:opacity-80 transition-opacity">
-                <span class="text-2xl">✒</span>
+                class="flex items-center font-serif font-semibold text-xl text-ink hover:opacity-80 transition-opacity">
+                <img :src="Brand" alt="Sourcedev-logo" class="h-12 w-auto object-contain" />
                 <span>Sourcedev</span>
             </RouterLink>
 
@@ -123,6 +123,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import BaseButton from './ui/BaseButton.vue'
 import BaseAvatar from './ui/BaseAvatar.vue'
+import Brand from '@/assets/images/Sourcedev2.png'
 
 const auth = useAuthStore()
 const router = useRouter()
