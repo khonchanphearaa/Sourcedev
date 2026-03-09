@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-family-serif: "Lora", Georgia, serif;
+  --font-family-sans: "DM Sans", system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", monospace;
+
+  --color-ink: #0f0e0d;
+  --color-ink-soft: #3a3835;
+  --color-ink-muted: #8a8582;
+
+  --color-paper: #faf9f7;
+  --color-paper-warm: #f5f2ee;
+  --color-paper-border: #e8e4df;
+
+  --color-accent: #c8502a;
+  --color-accent-hover: #a83e1f;
+  --color-accent-light: #fdf0eb;
+}
+
+@layer base {
+  html { -webkit-font-smoothing: antialiased; }
+  body { background-color: var(--color-paper); font-family: var(--font-family-sans); color: var(--color-ink); }
+  h1, h2, h3, h4 { font-family: var(--font-family-serif); }
+}
+
+@layer components {
+  .page-enter-active,
+  .page-leave-active { transition: opacity 0.2s, transform 0.2s; }
+  .page-enter-from   { opacity: 0; transform: translateY(8px); }
+  .page-leave-to     { opacity: 0; }
+}
