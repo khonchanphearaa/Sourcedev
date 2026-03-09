@@ -11,7 +11,7 @@ router.get('/', getArticles);
 router.get('/tags', getTags);
 router.get('/my', protect, getMyArticles);
 router.get('/:slug', getArticle);
-router.post('/', protect, createArticle);
+router.post('/', createArticle);
 router.put('/:id', protect, updateArticle);
 router.delete('/:id', protect, deleteArticle);
 

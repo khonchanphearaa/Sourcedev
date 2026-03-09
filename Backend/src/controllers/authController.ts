@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const token = generateToken(user._id.toString());
     res.status(201).json({
       success: true,
-      token,
+      // token,
       user: { id: user._id, name: user.name, email: user.email, bio: user.bio, avatar: user.avatar },
     });
   } catch (error) {

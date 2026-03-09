@@ -12,6 +12,7 @@ export interface IArticle extends Document {
   status: 'draft' | 'published';
   readTime: number;
   views: number;
+  linkGithub?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,6 +29,7 @@ const articleSchema = new Schema<IArticle>(
     status: { type: String, enum: ['draft', 'published'], default: 'draft' },
     readTime: { type: Number, default: 1 },
     views: { type: Number, default: 0 },
+    linkGithub: { type: String, default: '' },
   },
   { timestamps: true }
 );

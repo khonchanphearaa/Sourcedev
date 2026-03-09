@@ -57,9 +57,9 @@ export const getMyArticles = async (req: AuthRequest, res: Response): Promise<vo
 
 export const createArticle = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { title, excerpt, content, coverImage, tags, status } = req.body;
+    const { title, excerpt, content, coverImage, tags, status, linkGithub } = req.body;
     const article = await Article.create({
-      title, excerpt, content, coverImage, tags, status,
+      title, excerpt, content, coverImage, tags, status, linkGithub,
       author: req.user?.id,
     });
     const populated = await article.populate('author', 'name avatar');
@@ -76,8 +76,8 @@ export const updateArticle = async (req: AuthRequest, res: Response): Promise<vo
     if (article.author.toString() !== req.user?.id) {
       res.status(403).json({ success: false, message: 'Not authorized' }); return;
     }
-    const { title, excerpt, content, coverImage, tags, status } = req.body;
-    Object.assign(article, { title, excerpt, content, coverImage, tags, status });
+    const { title, excerpt, content, coverImage, tags, status, linkGithub } = req.body;
+    Object.assign(article, { title, excerpt, content, coverImage, tags, status, linkGithub });
     await article.save();
     res.json({ success: true, article });
   } catch {
