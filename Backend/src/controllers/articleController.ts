@@ -46,6 +46,17 @@ export const getArticle = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+/* Protected get single article by id for editing */
+export const getArticleById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const article = await Article.findById(req.params.id).populate('author', 'name avatar bio');
+    if (!article) { res.status(404).json({ success: false, message: 'Article not found' }); return; }
+    res.json({ success: true, article });
+  } catch {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 export const getMyArticles = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const articles = await Article.find({ author: req.user?.id })
