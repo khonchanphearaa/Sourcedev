@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Article } from '../models/Article';
 import { AuthRequest } from '../middlewares/auth';
 
+/* Public get articles anyone can read */
 export const getArticles = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -29,6 +30,7 @@ export const getArticles = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+/* Public get single article anyone can read */
 export const getArticle = async (req: Request, res: Response): Promise<void> => {
   try {
     const article = await Article.findOneAndUpdate(
@@ -55,6 +57,27 @@ export const getMyArticles = async (req: AuthRequest, res: Response): Promise<vo
   }
 };
 
+/* ADMIN — get all articles (any status) */
+export const getAllArticles = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const articles = await Article.find()
+      .populate('author', 'name avatar role')
+      .sort({ createdAt: -1 })
+      .select('-content');
+    res.json({ success: true, articles });
+  } catch {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+/**
+ * @CREATE 
+ * @UPDATE 
+ * @DELETE 
+ * Only author can create, update, delete their article
+ * Admin can get all articles but cannot create, update, delete other articles
+ */
+
 export const createArticle = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { title, excerpt, content, coverImage, tags, status, linkGithub } = req.body;
@@ -73,9 +96,7 @@ export const updateArticle = async (req: AuthRequest, res: Response): Promise<vo
   try {
     const article = await Article.findById(req.params.id);
     if (!article) { res.status(404).json({ success: false, message: 'Article not found' }); return; }
-    if (article.author.toString() !== req.user?.id) {
-      res.status(403).json({ success: false, message: 'Not authorized' }); return;
-    }
+
     const { title, excerpt, content, coverImage, tags, status, linkGithub } = req.body;
     Object.assign(article, { title, excerpt, content, coverImage, tags, status, linkGithub });
     await article.save();
@@ -89,9 +110,7 @@ export const deleteArticle = async (req: AuthRequest, res: Response): Promise<vo
   try {
     const article = await Article.findById(req.params.id);
     if (!article) { res.status(404).json({ success: false, message: 'Article not found' }); return; }
-    if (article.author.toString() !== req.user?.id) {
-      res.status(403).json({ success: false, message: 'Not authorized' }); return;
-    }
+
     await article.deleteOne();
     res.json({ success: true, message: 'Article deleted' });
   } catch {
