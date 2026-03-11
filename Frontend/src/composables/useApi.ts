@@ -1,8 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  // baseURL: '/api',
-  baseURL: import.meta.env.VITE_API_BASE_URL|| 'http://localhost:5050/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 })
 
@@ -15,9 +14,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const requestUrl = String(err.config?.url || '')
+    const isAuthAttempt = /\/auth\/(login|register)$/.test(requestUrl)
+
+    if (err.response?.status === 401 && !isAuthAttempt) {
       localStorage.removeItem('sourcedev_token')
-      window.location.href = '/login'
+      if (window.location.pathname !== '/login') window.location.href = '/login'
     }
     return Promise.reject(err)
   }
