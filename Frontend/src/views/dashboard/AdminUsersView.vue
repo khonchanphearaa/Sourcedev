@@ -5,7 +5,7 @@
       <p class="text-sm text-ink-muted font-sans mt-1">View and update user roles</p>
     </div>
 
-    <BaseAlert :message="error" class="mb-5" />
+    <BaseAlert :message="error || undefined" class="mb-5" />
     <BaseAlert :message="success" variant="success" class="mb-5" />
 
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
@@ -77,9 +77,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import api from '@/composables/useApi'
+import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '@/stores/auth'
+import { useAdminStore } from '@/stores/admin'
 import { useDate } from '@/composables/useDate'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseAvatar from '@/components/ui/BaseAvatar.vue'
@@ -88,24 +89,19 @@ import BaseAlert from '@/components/ui/BaseAlert.vue'
 import BaseModal from '@/components/ui/BaseModal.vue'
 import type { User } from '@/types'
 
-const auth = useAuthStore()
+const auth  = useAuthStore()
+const admin = useAdminStore()
 const { formatShort } = useDate()
 
-const users = ref<User[]>([])
-const loading = ref(true)
-const updating = ref<string | null>(null)
-const error = ref('')
-const success = ref('')
 const confirmModal = ref(false)
-const pendingUser = ref<User | null>(null)
+const pendingUser  = ref<User | null>(null)
 
-const adminCount = computed(() => users.value.filter(u => u.role === 'admin').length)
-const userCount = computed(() => users.value.filter(u => u.role === 'user').length)
+const { users, loading, updating, error, success, adminCount, userCount } = storeToRefs(admin)
 
 const toggleRole = (u: User) => {
-  error.value = ''
+  error.value   = null
   success.value = ''
-  pendingUser.value = u
+  pendingUser.value  = u
   confirmModal.value = true
 }
 
@@ -113,36 +109,9 @@ const confirmToggle = async () => {
   const u = pendingUser.value
   if (!u) return
   confirmModal.value = false
-  updating.value = u.id
-  try {
-    const newRole = u.role === 'admin' ? 'user' : 'admin'
-    const { data } = await api.put(`/auth/users/${u.id}/role`, { role: newRole })
-    const idx = users.value.findIndex(x => x.id === u.id)
-    if (idx !== -1) {
-      const currentUser = users.value[idx]
-      if (currentUser) {
-        users.value[idx] = { ...currentUser, role: data.user.role as User['role'] }
-      }
-    }
-    success.value = `${u.name} is now a ${newRole}.`
-    setTimeout(() => success.value = '', 3000)
-  } catch (err: unknown) {
-    const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-    error.value = msg || 'Failed to update role.'
-  } finally {
-    updating.value = null
-    pendingUser.value = null
-  }
+  await admin.updateUserRole(u)
+  pendingUser.value = null
 }
 
-onMounted(async () => {
-  try {
-    const { data } = await api.get('/auth/users')
-    users.value = data.users
-  } catch {
-    error.value = 'Failed to load users.'
-  } finally {
-    loading.value = false
-  }
-})
+onMounted(() => admin.fetchUsers())
 </script>
