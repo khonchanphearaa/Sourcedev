@@ -12,7 +12,14 @@ api.interceptors.request.use((config) => {
 })
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (
+      res.data && typeof res.data === 'object' && 'success' in res.data && 'data' in res.data
+    ) {
+      res.data = res.data.data
+    }
+    return res
+  },
   (err) => {
     const requestUrl = String(err.config?.url || '')
     const isAuthAttempt = /\/auth\/(login|register)$/.test(requestUrl)

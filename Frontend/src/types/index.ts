@@ -24,6 +24,18 @@ export interface Article {
   updatedAt: string
 }
 
+export interface Comment {
+  _id: string
+  article: string
+  author: User
+  content: string
+  parentComment: string | null
+  likes: string[]        
+  replies?: Comment[]   
+  createdAt: string
+  updatedAt: string
+}
+ 
 export interface Tag {
   _id: string
   count: number
