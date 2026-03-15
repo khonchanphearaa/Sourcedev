@@ -3,55 +3,49 @@
         <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
 
             <!-- Brand -->
-            <RouterLink to="/"
-                class="flex items-center font-serif font-semibold text-xl text-ink hover:opacity-80 transition-opacity">
+            <RouterLink to="/" class="flex items-center font-serif font-semibold text-xl text-ink hover:opacity-80 transition-opacity">
                 <img :src="Brand" alt="Sourcedev-logo" class="h-12 w-auto object-contain" />
                 <span>Sourcedev</span>
             </RouterLink>
-
             <!-- Desktop Nav -->
             <nav class="hidden md:flex items-center gap-1">
-                <RouterLink to="/"
-                    class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all"
-                    active-class="text-ink bg-paper-warm">
+                <RouterLink to="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
                     Explore
                 </RouterLink>
                 <template v-if="auth.isAuthenticated">
-                    <RouterLink to="/dashboard"
-                        class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all"
-                        active-class="text-ink bg-paper-warm">
+                    <RouterLink to="/dashboard" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
                         My Articles
+                    </RouterLink>
+                    <RouterLink to="/admin/users" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
+                        Users
                     </RouterLink>
                     <RouterLink to="/write">
                         <BaseButton variant="accent" size="sm">✦ Write</BaseButton>
                     </RouterLink>
+
                     <!-- Avatar dropdown -->
                     <div class="relative ml-1" ref="dropdownRef">
                         <button @click="dropdownOpen = !dropdownOpen" class="focus:outline-none">
-                            <BaseAvatar :name="auth.user?.name ?? ''" size="sm"
-                                class="cursor-pointer hover:opacity-80 transition-opacity" />
+                            <BaseAvatar :name="auth.user?.name ?? ''" size="sm" class="cursor-pointer hover:opacity-80 transition-opacity" />
                         </button>
                         <Transition enter-active-class="transition duration-150 ease-out"
                             enter-from-class="opacity-0 scale-95 -translate-y-1"
                             enter-to-class="opacity-100 scale-100 translate-y-0"
                             leave-active-class="transition duration-100 ease-in"
                             leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-                            <div v-if="dropdownOpen"
-                                class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl border border-paper-border shadow-lg overflow-hidden">
+                            <div v-if="dropdownOpen" class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl border border-paper-border shadow-lg overflow-hidden">
                                 <div class="px-4 py-3 border-b border-paper-border">
                                     <p class="text-sm font-semibold text-ink truncate">{{ auth.user?.name }}</p>
                                     <p class="text-xs text-ink-muted truncate">{{ auth.user?.email }}</p>
                                 </div>
-                                <RouterLink to="/profile" @click="dropdownOpen = false"
-                                    class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                                <RouterLink to="/profile" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                                     Profile</RouterLink>
-                                <RouterLink to="/dashboard" @click="dropdownOpen = false"
-                                    class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                                <RouterLink to="/dashboard" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                                     Dashboard</RouterLink>
+                                <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                                    Manage Users</RouterLink>
                                 <div class="border-t border-paper-border mt-1">
-                                    <button @click="handleLogout"
-                                        class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign
-                                        out</button>
+                                    <button @click="handleLogout" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
                                 </div>
                             </div>
                         </Transition>
@@ -97,6 +91,9 @@
                     <RouterLink to="/dashboard" @click="mobileOpen = false"
                         class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         My Articles</RouterLink>
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="mobileOpen = false"
+                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                        Manage Users</RouterLink>
                     <RouterLink to="/profile" @click="mobileOpen = false"
                         class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Profile</RouterLink>
@@ -115,6 +112,8 @@
             </div>
         </Transition>
     </header>
+
+    <BaseModal v-model="showLogoutModal" title="Sign out?" description="You will need to sign in again to access your dashboard and profile." confirm-text="Sign out" cancel-text="Cancel" @confirm="confirmLogout" />
 </template>
 
 <script setup lang="ts">
@@ -123,15 +122,21 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import BaseButton from './ui/BaseButton.vue'
 import BaseAvatar from './ui/BaseAvatar.vue'
+import BaseModal from './ui/BaseModal.vue'
 import Brand from '@/assets/images/Sourcedev2.png'
 
 const auth = useAuthStore()
 const router = useRouter()
 const dropdownOpen = ref(false)
 const mobileOpen = ref(false)
+const showLogoutModal = ref(false)
 const dropdownRef = ref<HTMLElement>()
 
 const handleLogout = () => {
+    showLogoutModal.value = true
+}
+
+const confirmLogout = () => {
     auth.logout()
     dropdownOpen.value = false
     mobileOpen.value = false
