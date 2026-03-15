@@ -7,7 +7,7 @@
 
         <!-- Profile card -->
         <div class="bg-white border border-paper-border rounded-xl p-6 flex items-center gap-4 mb-8">
-            <BaseAvatar :name="auth.user?.name ?? ''" size="lg" />
+            <BaseAvatar :name="auth.user?.name ?? ''" :src="auth.user?.avatar" size="lg" />
             <div>
                 <p class="font-semibold text-ink">{{ auth.user?.name }}</p>
                 <p class="text-sm text-ink-muted font-sans mt-0.5">{{ auth.user?.email }}</p>
@@ -16,11 +16,9 @@
 
         <!-- Form -->
         <div class="flex flex-col gap-6">
-            <BaseInput v-model="form.name" label="Display Name" placeholder="Your name" />
-            <BaseInput v-model="form.bio" type="textarea" label="Bio" placeholder="Tell readers about yourself…"
-                :maxlength="200" :rows="3" :show-count="true" :optional="true" />
-            <BaseInput v-model="form.avatar" label="Avatar URL" placeholder="https://example.com/photo.jpg"
-                :optional="true" />
+            <BaseInput v-model="form.name" label="Name" placeholder="Your name" />
+            <BaseInput v-model="form.bio" type="textarea" label="Bio" placeholder="Tell readers about yourself…" :maxlength="200" :rows="3" :show-count="true" :optional="true" />
+            <BaseInput v-model="form.avatar" label="Avatar URL" placeholder="https://example.com/photo.jpg" :optional="true" />
             <div>
                 <BaseButton variant="primary" :loading="saving" @click="save">Save changes</BaseButton>
             </div>
