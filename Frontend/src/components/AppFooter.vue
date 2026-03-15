@@ -11,8 +11,8 @@
             </div>
             <nav class="flex gap-6">
                 <RouterLink to="/" class="text-sm text-ink-muted hover:text-ink transition-colors">Explore</RouterLink>
-                <RouterLink to="/write" class="text-sm text-ink-muted hover:text-ink transition-colors">Write
-                </RouterLink>
+                <RouterLink v-if="auth.user?.role === 'admin'" to="/write" class="text-sm text-ink-muted hover:text-ink transition-colors">Write</RouterLink>
+                <RouterLink to="/aboutMe" class="text-sm text-ink-muted hover:text-ink transition-colors">About Me</RouterLink>
             </nav>
         </div>
         <div class="border-t border-paper-border">
@@ -24,4 +24,7 @@
 </template>
 <script setup lang="ts">
 import Brand from '@/assets/images/Sourcedev2.png'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
 </script>
