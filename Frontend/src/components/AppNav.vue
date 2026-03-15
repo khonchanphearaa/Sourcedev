@@ -52,9 +52,7 @@
                     </div>
                 </template>
                 <template v-else>
-                    <RouterLink to="/login"
-                        class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all">
-                        Sign in</RouterLink>
+                    <RouterLink to="/login" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all"> Sign in</RouterLink>
                     <RouterLink to="/register">
                         <BaseButton size="sm">Get started</BaseButton>
                     </RouterLink>
@@ -65,12 +63,9 @@
             <button @click="mobileOpen = !mobileOpen"
                 class="md:hidden p-2 rounded-lg hover:bg-paper-warm transition-colors" aria-label="Menu">
                 <div class="w-5 flex flex-col gap-1.5">
-                    <span
-                        :class="['block h-0.5 bg-ink rounded transition-all duration-200', mobileOpen ? 'rotate-45 translate-y-2' : '']" />
-                    <span
-                        :class="['block h-0.5 bg-ink rounded transition-all duration-200', mobileOpen ? 'opacity-0' : '']" />
-                    <span
-                        :class="['block h-0.5 bg-ink rounded transition-all duration-200', mobileOpen ? '-rotate-45 -translate-y-2' : '']" />
+                    <span :class="['block h-0.5 bg-ink rounded transition-all duration-200', mobileOpen ? 'rotate-45 translate-y-2' : '']" />
+                    <span :class="['block h-0.5 bg-ink rounded transition-all duration-200', mobileOpen ? 'opacity-0' : '']" />
+                    <span :class="['block h-0.5 bg-ink rounded transition-all duration-200', mobileOpen ? '-rotate-45 -translate-y-2' : '']" />
                 </div>
             </button>
         </div>
@@ -81,32 +76,23 @@
             leave-from-class="opacity-100" leave-to-class="opacity-0">
             <div v-if="mobileOpen"
                 class="md:hidden border-t border-paper-border bg-white px-4 py-3 flex flex-col gap-1">
-                <RouterLink to="/" @click="mobileOpen = false"
-                    class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                <RouterLink to="/" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                     Explore</RouterLink>
                 <template v-if="auth.isAuthenticated">
-                    <RouterLink to="/write" @click="mobileOpen = false"
-                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink to="/write" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Write Article</RouterLink>
-                    <RouterLink to="/dashboard" @click="mobileOpen = false"
-                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink to="/dashboard" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         My Articles</RouterLink>
-                    <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="mobileOpen = false"
-                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Manage Users</RouterLink>
-                    <RouterLink to="/profile" @click="mobileOpen = false"
-                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink to="/profile" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Profile</RouterLink>
-                    <button @click="handleLogout"
-                        class="text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">Sign
-                        out</button>
+                    <button @click="handleLogout" class="text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
                 </template>
                 <template v-else>
-                    <RouterLink to="/login" @click="mobileOpen = false"
-                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink to="/login" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Sign in</RouterLink>
-                    <RouterLink to="/register" @click="mobileOpen = false"
-                        class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink to="/register" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Get started</RouterLink>
                 </template>
             </div>
