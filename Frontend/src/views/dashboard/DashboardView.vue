@@ -55,7 +55,7 @@
 
                 <!-- Actions -->
                 <div class="flex flex-col gap-2 shrink-0">
-                    <RouterLink v-if="article.status === 'published'" :to="`/article/${article.slug}`" target="_blank">
+                    <RouterLink v-if="article.status === 'published'" :to="`/article/${article.slug}`" >
                         <BaseButton variant="ghost" size="sm">View</BaseButton>
                     </RouterLink>
                     <RouterLink :to="`/edit/${article._id}`">
@@ -97,7 +97,9 @@ const remove = async (id: string) => {
 onMounted(async () => {
     try {
         const { data } = await api.get('/articles/my')
-        articles.value = data.articles
+        articles.value = Array.isArray(data) ? data : (Array.isArray(data?.articles) ? data.articles : [])
+    } catch {
+        articles.value = []
     } finally {
         loading.value = false
     }
