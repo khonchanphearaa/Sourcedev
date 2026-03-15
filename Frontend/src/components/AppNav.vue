@@ -87,7 +87,7 @@
                         Manage Users</RouterLink>
                     <RouterLink to="/profile" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Profile</RouterLink>
-                    <button @click="handleLogout" class="text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
+                    <button @click="handleLogout" class="text-left px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors cursor-pointer">Sign out</button>
                 </template>
                 <template v-else>
                     <RouterLink to="/login" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
