@@ -25,7 +25,7 @@ const props = withDefaults(defineProps<{
     tag: 'button',
 })
 
-const baseClasses = 'inline-flex items-center justify-center gap-2 font-sans font-medium rounded-lg transition-all duration-200 whitespace-nowrap select-none'
+const baseClasses = 'inline-flex items-center justify-center gap-2 font-sans font-medium rounded-lg transition-all duration-200 whitespace-nowrap select-none cursor-pointer'
 
 const variantClasses: Record<string, string> = {
     primary: 'bg-ink text-paper hover:bg-ink-soft active:scale-95 shadow-sm hover:shadow',
