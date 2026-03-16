@@ -54,6 +54,7 @@
                         class="inline-flex items-center transition-colors hover:text-[#D97257]">
                         <Github :size="20" />
                     </a>
+                    <CommentSection :article-id="article._id"/>
                 </p>
                 <div class="border-t border-paper-border pb-16 mt-10" />
             </div>
@@ -81,6 +82,7 @@ import BaseSpinner from '@/components/ui/BaseSpinner.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseAvatar from '@/components/ui/BaseAvatar.vue'
 import BaseTag from '@/components/ui/BaseTag.vue'
+import CommentSection from './comments/Commentsection.vue'
 import type { Article } from '@/types'
 
 const route = useRoute()
@@ -90,8 +92,11 @@ const article = ref<Article | null>(null)
 const loading = ref(true)
 
 const isAuthor = computed(() => {
+    if (!auth.user?.id) return false
+    if (auth.user.role === 'admin') return true
+
     const authorId = (article.value?.author as { id?: string; _id?: string })
-    return auth.user?.id === authorId?.id || auth.user?.id === authorId?._id
+    return auth.user.id === authorId?.id || auth.user.id === authorId?._id
 })
 
 const renderedContent = computed(() => article.value?.content ? marked(article.value.content) as string : '')
@@ -99,7 +104,7 @@ const renderedContent = computed(() => article.value?.content ? marked(article.v
 onMounted(async () => {
     try {
         const { data } = await api.get(`/articles/${route.params.slug}`)
-        article.value = data.article
+        article.value = (data?.article ?? data) as Article
     } finally {
         loading.value = false
     }
