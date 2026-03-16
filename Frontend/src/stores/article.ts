@@ -51,22 +51,22 @@ export const useArticleStore = defineStore('article', () => {
 
 	const getArticleBySlug = async (slug: string) => {
 		const { data } = await api.get(`/articles/${slug}`)
-		return data.article as Article
+		return (data?.article ?? data) as Article
 	}
 
 	const getArticleById = async (id: string) => {
 		const { data } = await api.get(`/articles/id/${id}`)
-		return data.article as Article
+		return (data?.article ?? data) as Article
 	}
 
 	const createArticle = async (payload: SaveArticlePayload) => {
 		const { data } = await api.post('/articles', payload)
-		return data.article as Article
+		return (data?.article ?? data) as Article
 	}
 
 	const updateArticle = async (id: string, payload: SaveArticlePayload) => {
 		const { data } = await api.put(`/articles/${id}`, payload)
-		return data.article as Article
+		return (data?.article ?? data) as Article
 	}
 
 	const deleteArticle = async (id: string) => {
@@ -75,7 +75,8 @@ export const useArticleStore = defineStore('article', () => {
 
 	const listMyArticles = async () => {
 		const { data } = await api.get('/articles/my')
-		return (data.articles || []) as Article[]
+		if (Array.isArray(data)) return data as Article[]
+		return (data?.articles || []) as Article[]
 	}
 
 	const getArticleCount = async () => {

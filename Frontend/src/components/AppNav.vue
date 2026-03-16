@@ -45,7 +45,7 @@
                                 <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                                     Manage Users</RouterLink>
                                 <div class="border-t border-paper-border mt-1">
-                                    <button @click="handleLogout" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">Sign out</button>
+                                    <button @click="handleLogout" class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer">Sign out</button>
                                 </div>
                             </div>
                         </Transition>

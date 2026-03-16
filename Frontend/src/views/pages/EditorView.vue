@@ -24,8 +24,11 @@
 
             <!-- Cover image -->
             <BaseInput v-model="form.coverImage" label="Cover Image URL" placeholder="https://example.com/image.jpg" :optional="true" />
-            <div v-if="form.coverImage" class="rounded-xl overflow-hidden max-h-56">
+            <div v-if="form.coverImage" class="relative rounded-xl overflow-hidden max-h-56">
                 <img :src="form.coverImage" alt="Cover preview" class="w-full h-full object-cover" />
+                <div v-if="isEditing && currentStatus" class="absolute top-3 right-3">
+                    <StatusBadge :status="currentStatus" />
+                </div>
             </div>
 
             <!-- Link to GitHub -->
@@ -70,6 +73,7 @@ import api from '@/composables/useApi'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
+import StatusBadge from '@/components/ui/StatusBadge.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -78,6 +82,7 @@ const saving = ref(false)
 const error = ref('')
 const tab = ref<'write' | 'preview'>('write')
 const tagsInput = ref('')
+const currentStatus = ref<'draft' | 'published' | null>(null)
 const form = ref({ title: '', excerpt: '', content: '', coverImage: '', linkGithub: '' })
 
 const previewHtml = computed(() => marked(form.value.content || '') as string)
@@ -89,6 +94,7 @@ onMounted(async () => {
             const a = data?.article ?? data
             form.value = { title: a.title, excerpt: a.excerpt, content: a.content, coverImage: a.coverImage || '', linkGithub: a.linkGithub || '' }
             tagsInput.value = a.tags.join(', ')
+            currentStatus.value = a.status === 'published' ? 'published' : 'draft'
         } catch { error.value = 'Could not load article.' }
     }
 })

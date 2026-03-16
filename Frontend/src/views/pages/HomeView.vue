@@ -87,16 +87,26 @@ const fetchArticles = async () => {
         const params: Record<string, unknown> = { page: page.value, limit: 9 }
         if (activeTag.value) params.tag = activeTag.value
         const { data } = await api.get('/articles', { params })
-        articles.value = data.articles
-        totalPages.value = data.pages
+        articles.value = Array.isArray(data?.articles) ? data.articles : []
+        totalPages.value = Number(data?.pages || 1)
+    } catch {
+        articles.value = []
+        totalPages.value = 1
     } finally {
         loading.value = false
     }
 }
 
 const fetchTags = async () => {
-    const { data } = await api.get('/articles/tags')
-    tags.value = data.tags
+    try {
+        const { data } = await api.get('/articles/tags')
+        if (Array.isArray(data)) {
+            tags.value = data
+            return
+        }
+    } catch {
+        tags.value = []
+    }
 }
 
 watch(activeTag, () => { page.value = 1 })
