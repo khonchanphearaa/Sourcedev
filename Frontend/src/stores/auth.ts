@@ -3,12 +3,19 @@ import { ref, computed } from 'vue'
 import api from '@/composables/useApi'
 import type { User } from '@/types'
 
+type UserPayload = User & { _id?: string }
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(localStorage.getItem('sourcedev_token'))
   const loading = ref(false)
 
   const isAuthenticated = computed(() => !!token.value && !!user.value)
+
+  const normalizeUser = (payload: UserPayload): User => ({
+    ...payload,
+    id: payload.id || payload._id || '',
+  })
 
   const setAuth = (newToken: string, newUser: User) => {
     token.value = newToken
@@ -27,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     try {
       const { data } = await api.post('/auth/register', { name, email, password })
-      setAuth(data.token, data.user)
+      setAuth(data.token, normalizeUser(data.user))
       return { success: true }
     } catch (err: unknown) {
       const e = err as { response?: { data?: { message?: string } } }
@@ -43,7 +50,7 @@ export const useAuthStore = defineStore('auth', () => {
     loading.value = true
     try {
       const { data } = await api.post('/auth/login', { email, password })
-      setAuth(data.token, data.user)
+      setAuth(data.token, normalizeUser(data.user))
       return { success: true }
     } catch (err: unknown) {
       const e = err as { response?: { data?: { message?: string } } }
@@ -57,7 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return
     try {
       const { data } = await api.get('/auth/me')
-      user.value = data.user
+      user.value = normalizeUser(data.user)
     } catch {
       logout()
     }
@@ -65,8 +72,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   const updateProfile = async (payload: Partial<User>) => {
     const { data } = await api.put('/auth/profile', payload)
-    user.value = data.user
-    return data.user
+    user.value = normalizeUser(data.user)
+    return user.value
   }
 
   return { user, token, loading, isAuthenticated, register, login, logout, fetchMe, updateProfile }
