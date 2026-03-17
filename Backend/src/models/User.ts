@@ -9,6 +9,8 @@ export interface IUser extends Document {
   avatar?: string;
   bio?: string;
   role: 'admin' | 'user';
+  otp?: string;
+  otpExpires?: Date;
   createdAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
@@ -21,6 +23,8 @@ const userSchema = new Schema<IUser>(
     avatar: { type: String, default: '' },
     bio: { type: String, maxlength: 200, default: '' },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
+    otp: { type: String },
+    otpExpires: { type: Date },
   },
   { timestamps: true }
 );
