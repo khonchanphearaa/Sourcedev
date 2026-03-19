@@ -9,6 +9,7 @@ const router = createRouter({
     { path: '/article/:slug', component: () => import('@/views/pages/ArticleView.vue') },
     { path: '/login', component: () => import('@/views/auth/LoginView.vue'), meta: { guestOnly: true } },
     { path: '/register', component: () => import('@/views/auth/RegisterView.vue'), meta: { guestOnly: true } },
+    { path: '/forgot-password', component: () => import('@/views/auth/SendOTPView.vue'), meta: { guestOnly: true } },
     { path: '/dashboard', component: () => import('@/views/dashboard/DashboardView.vue'), meta: { requiresAuth: true } },
     { path: '/admin/users', component: () => import('@/views/dashboard/AdminUsersView.vue'), meta: { requiresAuth: true, requiresAdmin: true } },
     { path: '/write', component: () => import('@/views/pages/EditorView.vue'), meta: { requiresAuth: true, requiresAdmin: false } },

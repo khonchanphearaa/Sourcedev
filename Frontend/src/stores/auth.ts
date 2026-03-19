@@ -76,5 +76,18 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value
   }
 
-  return { user, token, loading, isAuthenticated, register, login, logout, fetchMe, updateProfile }
+  const sendOTP = async (email: string) =>{
+    loading.value = true;
+    try {
+      const res = await api.post('/otp/send-otp', { email });
+      return { success: res.data.success, message: res.data.message }
+    } catch (error) {
+      console.log(error);
+      return { success: false, message: 'Failed to send OTP' }
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  return { user, token, loading, isAuthenticated, register, login, logout, fetchMe, updateProfile, sendOTP }
 })
