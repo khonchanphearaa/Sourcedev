@@ -5,6 +5,7 @@ import { connectDB } from './config/database';
 import authRoutes from './routes/auth.routes';
 import articleRoutes from './routes/article.routes';
 import commentRoutes from './routes/comments.routes';
+import otpRoutes from './routes/otp.route';
 
 dotenv.config();
 
@@ -17,12 +18,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/otp', otpRoutes);
 app.use('/api/articles', articleRoutes);
 app.use('/api/comments', commentRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
-  res.json({ success: true, message: 'Sourcedev API is running 🖋️' });
+  res.json({ success: true, message: 'Sourcedev API is running' });
 });
 
 // 404 handler
@@ -35,7 +37,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`🖋️  Sourcedev API running on http://localhost:${PORT}`);
+    console.log(`Sourcedev API running on http://localhost:${PORT}`);
   });
 });
 
