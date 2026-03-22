@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import VerifyOtp from '@/views/auth/VerifyOtp.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +16,8 @@ const router = createRouter({
     { path: '/edit/:id',   component: () => import('@/views/pages/EditorView.vue'),    meta: { requiresAuth: true } },
     { path: '/profile',    component: () => import('@/views/auth/ProfileView.vue'),   meta: { requiresAuth: true } },
     { path: '/:pathMatch(.*)*', component: () => import('@/views/NotFoundView.vue') },
+    {path : '/verifyOtp', name: 'verifyOtp', component: VerifyOtp},
+    {path : '/reset-password', name: 'reset-password', component: ResetPassword},
   ],
 })
 
