@@ -13,5 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import Brand from '@/assets/images/logo.png'
+
 defineProps<{ title: string; subtitle: string }>()
 </script>

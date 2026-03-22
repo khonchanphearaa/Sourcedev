@@ -2,7 +2,12 @@ import mongoose from 'mongoose';
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://khonchanphearaa_db_user:GOnGRtpcWszRzFaR@sourcedev.e79qnd4.mongodb.net/?appName=sourcedev';
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      console.error('MONGODB_URI is not defined');
+      process.exit(1);
+    }
+
     await mongoose.connect(mongoUri);
     console.log('MongoDB connected successfully');
   } catch (error) {

@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
 
 export interface AuthRequest extends Request {
-  user?: { id: string; name: string; email: string };
+  user?: { id: string; name: string; email: string; role: 'admin' | 'user' };
 }
 
 export const protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
@@ -23,9 +23,20 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
       return;
     }
 
-    req.user = { id: user._id.toString(), name: user.name, email: user.email };
+    req.user = { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
     next();
   } catch {
     res.status(401).json({ success: false, message: 'Token invalid or expired' });
   }
 };
+
+export const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  if (req.user?.role !== 'admin') {
+    res.status(403).json({
+      success: false,
+      message: 'Admin access required'
+    })
+    return;
+  }
+  next();
+}

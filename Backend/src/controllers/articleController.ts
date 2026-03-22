@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { Article } from '../models/Article';
 import { AuthRequest } from '../middlewares/auth';
+import { sendResponse } from '../utils/response';
 
+/* Public get articles anyone can read */
 export const getArticles = async (req: Request, res: Response): Promise<void> => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -23,12 +25,13 @@ export const getArticles = async (req: Request, res: Response): Promise<void> =>
       .limit(limit)
       .select('-content');
 
-    res.json({ success: true, articles, total, page, pages: Math.ceil(total / limit) });
+    return sendResponse(res, 200, 'Articles retrieved successfully', { articles, total, page, pages: Math.ceil(total / limit) });
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
   }
 };
 
+/* Public get single article anyone can read */
 export const getArticle = async (req: Request, res: Response): Promise<void> => {
   try {
     const article = await Article.findOneAndUpdate(
@@ -37,10 +40,23 @@ export const getArticle = async (req: Request, res: Response): Promise<void> => 
       { new: true }
     ).populate('author', 'name avatar bio');
 
-    if (!article) { res.status(404).json({ success: false, message: 'Article not found' }); return; }
-    res.json({ success: true, article });
+    if(!article){ return sendResponse(res, 404, 'Article not found');}
+    return sendResponse(res, 200, 'Article retrieved successfully', article);
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
+  }
+};
+
+/* Protected get single article by id for editing */
+export const getArticleById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const article = await Article.findById(req.params.id).populate('author', 'name avatar bio');
+  
+    if(!article){return sendResponse(res, 404, 'Article not found');}
+
+    return sendResponse(res, 200, 'Article retrieved successfully', article);
+  } catch {
+    return sendResponse(res, 500, 'Server error');
   }
 };
 
@@ -49,9 +65,22 @@ export const getMyArticles = async (req: AuthRequest, res: Response): Promise<vo
     const articles = await Article.find({ author: req.user?.id })
       .sort({ createdAt: -1 })
       .select('-content');
-    res.json({ success: true, articles });
+    return sendResponse(res, 200, 'Articles retrieved successfully', articles);
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
+  }
+};
+
+/* ADMIN — get all articles (any status) */
+export const getAllArticles = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const articles = await Article.find()
+      .populate('author', 'name avatar role')
+      .sort({ createdAt: -1 })
+      .select('-content');
+    return sendResponse(res, 200, 'Articles retrieved successfully', articles);
+  } catch {
+    return sendResponse(res, 500, 'Server error');
   }
 };
 
@@ -63,39 +92,35 @@ export const createArticle = async (req: AuthRequest, res: Response): Promise<vo
       author: req.user?.id,
     });
     const populated = await article.populate('author', 'name avatar');
-    res.status(201).json({ success: true, article: populated });
+    return sendResponse(res, 201, 'Article created successfully', populated);
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
   }
 };
 
 export const updateArticle = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const article = await Article.findById(req.params.id);
-    if (!article) { res.status(404).json({ success: false, message: 'Article not found' }); return; }
-    if (article.author.toString() !== req.user?.id) {
-      res.status(403).json({ success: false, message: 'Not authorized' }); return;
-    }
+    if (!article) { return sendResponse(res, 404, 'Article not found'); }
+
     const { title, excerpt, content, coverImage, tags, status, linkGithub } = req.body;
     Object.assign(article, { title, excerpt, content, coverImage, tags, status, linkGithub });
     await article.save();
-    res.json({ success: true, article });
+    return sendResponse(res, 200, 'Article updated successfully', article);
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
   }
 };
 
 export const deleteArticle = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const article = await Article.findById(req.params.id);
-    if (!article) { res.status(404).json({ success: false, message: 'Article not found' }); return; }
-    if (article.author.toString() !== req.user?.id) {
-      res.status(403).json({ success: false, message: 'Not authorized' }); return;
-    }
+    if (!article) { return sendResponse(res, 404, 'Article not found'); }
+
     await article.deleteOne();
-    res.json({ success: true, message: 'Article deleted' });
+    return sendResponse(res, 200, 'Article deleted');
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
   }
 };
 
@@ -108,8 +133,8 @@ export const getTags = async (_req: Request, res: Response): Promise<void> => {
       { $sort: { count: -1 } },
       { $limit: 20 },
     ]);
-    res.json({ success: true, tags });
+    return sendResponse(res, 200, 'Tags retrieved successfully', tags);
   } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    return sendResponse(res, 500, 'Server error');
   }
 };
