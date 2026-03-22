@@ -4,6 +4,9 @@
             <BaseAlert :message="error" />
             <BaseInput v-model="email" type="email" label="Email" placeholder="you@example.com" />
             <BaseInput v-model="password" type="password" label="Password" placeholder="••••••••" @keyup.enter="submit" />
+            <div class="flex justify-end -mt-2">
+                <RouterLink to="/forgot-password" class="text-sm text-accent hover:underline">Forgot password?</RouterLink>
+            </div>
             <BaseButton variant="primary" size="lg" :loading="auth.loading" @click="submit" class="w-full mt-1">
                 Sign in
             </BaseButton>
