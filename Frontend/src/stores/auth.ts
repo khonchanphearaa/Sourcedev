@@ -68,10 +68,6 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = data.user
     return data.user
   }
-<<<<<<< HEAD
-
-  return { user, token, loading, isAuthenticated, register, login, logout, fetchMe, updateProfile }
-=======
   
 const sendOTP = async (email: string) => {
   loading.value = true;
@@ -102,5 +98,4 @@ const sendOTP = async (email: string) => {
   }
 }
   return { user, token, loading, isAuthenticated, register, login, logout, fetchMe, updateProfile, sendOTP }
->>>>>>> d5cc552 (on task verifyotp already)
 })

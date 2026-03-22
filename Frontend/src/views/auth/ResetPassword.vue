@@ -56,7 +56,6 @@ const resetPassword = async () => {
         error.value = "You must agree to the terms and conditions.";
         return;
     }
-
     loading.value = true;
     error.value = ''; 
 
@@ -66,9 +65,7 @@ const resetPassword = async () => {
             otp: String(savedOtp.value), // Force string format
             newPassword: newpassword.value   // Try 'password' key
         };
-
         const res = await api.post('/otp/reset-password', payload);
-
         if (res?.status === 200 || res?.data?.success) {
             localStorage.removeItem('email');
             localStorage.removeItem('temp_otp');
