@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import VerifyOtp from '@/views/auth/VerifyOtp.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +19,8 @@ const router = createRouter({
     { path: '/profile', component: () => import('@/views/auth/ProfileView.vue'), meta: { requiresAuth: true } },
     { path: '/aboutMe', component: () => import('@/views/pages/AboutUs.vue'), meta: { requiresAuth: true } },
     { path: '/:pathMatch(.*)*', component: () => import('@/views/NotFoundView.vue') },
+    {path : '/verifyOtp', name: 'verifyOtp', component: VerifyOtp},
+    {path : '/reset-password', name: 'reset-password', component: ResetPassword},
   ],
 })
 
@@ -24,8 +28,9 @@ router.beforeEach(async (to) => {
   const auth = useAuthStore()
   if (auth.token && !auth.user) await auth.fetchMe()
   if (to.meta.requiresAuth && !auth.isAuthenticated) return '/login'
+  if (to.meta.guestOnly  && auth.isAuthenticated)    return '/dashboard'
   if (to.meta.requiresAdmin && auth.user?.role !== 'admin') return '/dashboard'
-  if (to.meta.guestOnly && auth.isAuthenticated) return '/dashboard'
 })
+
 
 export default router
