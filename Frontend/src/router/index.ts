@@ -30,10 +30,6 @@ router.beforeEach(async (to) => {
   if (to.meta.requiresAuth && !auth.isAuthenticated) return '/login'
   if (to.meta.guestOnly  && auth.isAuthenticated)    return '/dashboard'
   if (to.meta.requiresAdmin && auth.user?.role !== 'admin') return '/dashboard'
-})
-<<<<<<< HEAD
-=======
-
->>>>>>> cb1933339a36b0322dd9a25f36084524091c3dc4
+});
 
 export default router
