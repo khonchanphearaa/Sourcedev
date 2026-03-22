@@ -88,6 +88,34 @@ export const useAuthStore = defineStore('auth', () => {
       loading.value = false;
     }
   }
+  
+const sendOTP = async (email: string) => {
+  loading.value = true;
+  try {
+    const res = await api.post('/otp/send-otp', { email });
+    if (!res || !res.data) {
+      console.warn("Backend returned an empty body.");
+      return { 
+        success: true,
+        message: 'OTP sent (empty response from server)' 
+      };
+    }
+    return { 
+      success: res.data?.success ?? true, 
+      message: res.data?.message || 'OTP sent successfully' 
+    };
 
+  } catch (error: any) {
+    console.error("AuthStore Error:", error);
+    const apiMessage = error.response?.data?.message;
+    
+    return { 
+      success: false, 
+      message: apiMessage || 'Could not connect to the server' 
+    };
+  } finally {
+    loading.value = false;
+  }
+}
   return { user, token, loading, isAuthenticated, register, login, logout, fetchMe, updateProfile, sendOTP }
 })

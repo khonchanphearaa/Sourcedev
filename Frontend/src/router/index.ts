@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import VerifyOtp from '@/views/auth/VerifyOtp.vue'
+import ResetPassword from '@/views/auth/ResetPassword.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -17,6 +19,8 @@ const router = createRouter({
     { path: '/profile', component: () => import('@/views/auth/ProfileView.vue'), meta: { requiresAuth: true } },
     { path: '/aboutMe', component: () => import('@/views/pages/AboutUs.vue'), meta: { requiresAuth: true } },
     { path: '/:pathMatch(.*)*', component: () => import('@/views/NotFoundView.vue') },
+    {path : '/verifyOtp', name: 'verifyOtp', component: VerifyOtp},
+    {path : '/reset-password', name: 'reset-password', component: ResetPassword},
   ],
 })
 
@@ -27,5 +31,9 @@ router.beforeEach(async (to) => {
   if (to.meta.guestOnly  && auth.isAuthenticated)    return '/dashboard'
   if (to.meta.requiresAdmin && auth.user?.role !== 'admin') return '/dashboard'
 })
+<<<<<<< HEAD
+=======
+
+>>>>>>> cb1933339a36b0322dd9a25f36084524091c3dc4
 
 export default router
