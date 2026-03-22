@@ -22,6 +22,6 @@ router.beforeEach(async (to) => {
   if (auth.token && !auth.user) await auth.fetchMe()
   if (to.meta.requiresAuth && !auth.isAuthenticated) return '/login'
   if (to.meta.guestOnly  && auth.isAuthenticated)    return '/dashboard'
-})
+});
 
 export default router
