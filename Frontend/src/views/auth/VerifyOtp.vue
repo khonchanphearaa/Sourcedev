@@ -3,7 +3,7 @@
     <div class="otp-card">
       <div class="header">
         <div class="icon-orb">
-          <img src="@/assets/images/logo.png" alt="Logo" class="gopher-logo" />
+          <img src="@/assets/images/Sourcedev2.png" alt="Logo" class="gopher-logo" />
         </div>
         <h1>Security Verification</h1>
         <p class="subtitle">
