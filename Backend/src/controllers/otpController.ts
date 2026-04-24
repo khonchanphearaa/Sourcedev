@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { User } from '../models/User';
-import { sendEmail } from '../utils/sendEmail';
-import { generateOTP } from '../utils/generateOTP';
 import { sendResponse } from '../utils/response';
 import { ResetPasswordSchema } from '../validators/auth.validator';
+
+import * as otpService from '../services/otpService';
 
 export const sendOTP = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -11,25 +11,9 @@ export const sendOTP = async (req: Request, res: Response): Promise<void> => {
         if (!email) {
             return sendResponse(res, 400, 'Please provide email');
         }
-        const user = await User.findOne({ email })
-        if (!user) {
-            return sendResponse(res, 404, 'User not found');
-        }
-
-        /* Generate OTP and set expiration */
-        const otp = generateOTP();
-        user.otp = otp;
-        user.otpExpires = new Date(Date.now() + 5 * 60 * 1000); // Expires in 5 minutes
-        await user.save();
-
-        /* Send OTP via email */
-        await sendEmail({
-            email: user.email,
-            subject: 'Your OTP Code',
-            otp,
-        });
-
+        await otpService.sendOTP(email);
         return sendResponse(res, 200, 'OTP sent to your email');
+        
     } catch (error) {
         return sendResponse(res, 500, 'Server error');
     }
