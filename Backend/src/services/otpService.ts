@@ -21,7 +21,26 @@ export const sendOTP = async (email: string) => {
     })
 }
 
-// export const vertifyOTP = async (email: string, otp: string) =>{
-//     const 
-// }
+export const verifyOTP = async (email: string, otp: string) =>{
+    const user = await User.findOne({
+        email: email.toLowerCase(),
+        otp: otp,
+        otpExpires: { $gt: new Date() } 
+    })
+    if (!user){
+        throw new Error("Invalid or expired OTP");
+    }
+    return user;
+}
+
+export const resetPwd = async (email: string, otp: string, newPassword: string) =>{
+    const user = await verifyOTP(email, otp);
+
+    user.password = newPassword;
+    user.otp = undefined;
+    user.otpExpires = undefined;
+    await user.save();
+
+    return user;
+}
 

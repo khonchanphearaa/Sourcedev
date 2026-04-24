@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User';
+import * as authService from '../services/authService';
+import { sendResponse } from '../utils/response';
 
 const generateToken = (id: string): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
@@ -14,20 +16,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ success: false, message: 'Please provide all fields' });
       return;
     }
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      res.status(400).json({ success: false, message: 'Email already in use' });
-      return;
-    }
+    const { user, token } = await authService.registerAccount(req.body);
 
-    /* The first registered user is promoted to admin */
-    const adminCount = await User.countDocuments({ role: 'admin' });
-    const role = adminCount === 0 ? 'admin' : 'user';
-
-    const user = await User.create({ name, email, password, role });
-    const token = generateToken(user._id.toString());
     res.status(201).json({
       success: true,
+      message: 'Registration successful',
       token,
       user: { id: user._id, name: user.name, email: user.email, bio: user.bio, avatar: user.avatar, role: user.role },
     });
@@ -43,49 +36,32 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       res.status(400).json({ success: false, message: 'Please provide email and password' });
       return;
     }
-    const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
-      res.status(401).json({ success: false, message: 'Invalid credentials' });
-      return;
-    }
-    const token = generateToken(user._id.toString());
-    res.json({
-      success: true,
+
+    const { user, token } = await authService.loginAccount(email, password);
+    return sendResponse(res, 200, 'Login successful', {
       token,
-      user: { id: user._id, name: user.name, email: user.email, bio: user.bio, avatar: user.avatar, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role }
     });
-  } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
 export const getMe = async (req: Request & { user?: { id: string } }, res: Response): Promise<void> => {
   try {
-    const user = await User.findById(req.user?.id).select('-password');
-    if (!user) {
-      res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-      return;
-    }
-    res.json({ success: true, user });
-  } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    const user = await authService.getMe(req.user?.id as string);
+    return sendResponse(res, 200, 'Profile retrieved', user);
+  } catch (error: any) {
+    return sendResponse(res, 404, error.message);
   }
 };
 
 export const updateProfile = async (req: Request & { user?: { id: string } }, res: Response): Promise<void> => {
   try {
-    const { name, bio, avatar } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.user?.id,
-      { name, bio, avatar },
-      { new: true, runValidators: true }
-    ).select('-password');
-    res.json({ success: true, user });
-  } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    const user = await authService.updateProfile(req.user?.id as string, req.body);
+    return sendResponse(res, 200, 'Profile updated', user);
+  } catch (error: any) {
+    return sendResponse(res, 500, error.message);
   }
 };
 

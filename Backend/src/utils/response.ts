@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import { Response } from 'express';
 
 export const sendResponse = (
     res: Response,
@@ -6,9 +6,15 @@ export const sendResponse = (
     message: string,
     data: any = null
 ) => {
-    res.status(status).json({
+    const response: any = {
         success: status < 400,
         message,
-        data
-    })
-}
+    };
+
+    // Only add the data key if data is actually provided   
+    if (data !== null) {
+        response.data = data;
+    }
+
+    res.status(status).json(response);
+};
