@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { User } from '../models/User';
 import { sendResponse } from '../utils/response';
 import { ResetPasswordSchema } from '../validators/auth.validator';
 
@@ -25,12 +24,7 @@ export const verifyOTP = async (req: Request, res: Response): Promise<void> => {
         if(!email || !otp) {
             return sendResponse(res, 400, 'Please provide email and OTP');
         }
-        const user = await User.findOne({ 
-            email: email.toLowerCase(),
-            otp: otp,
-            otpExpires: { $gt: new Date() } 
-         })
-        if (!user) { return sendResponse(res, 404, 'Invalid or expired OTP');}
+        await otpService.verifyOTP(email, otp);
         return sendResponse(res, 200, 'OTP verified success');
     } catch (error) {
         return sendResponse(res, 500, 'Server error');
@@ -44,19 +38,8 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
             return sendResponse(res, 400, validation.error.issues[0]?.message || 'Invalid request data');
         }
 
-        const { email, otp, newPassword } = validation.data;
-        const user = await User.findOne({
-            email: email.toLowerCase(),
-            otp,
-            otpExpires: { $gt: new Date() }
-        });
-
-        if (!user) { return sendResponse(res, 404, 'Invalid OTP or session expired'); }
-
-        user.password = newPassword;
-        user.otp = undefined;
-        user.otpExpires = undefined;
-        await user.save();
+        const {email, otp, newPassword} = validation.data;
+        await otpService.resetPwd(email, otp, newPassword);
 
         return sendResponse(res, 200, 'Password reset success');
     } catch (error) {
