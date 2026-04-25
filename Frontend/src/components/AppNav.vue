@@ -12,14 +12,17 @@
                 <RouterLink to="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
                     Explore
                 </RouterLink>
+                <RouterLink to="/aboutMe" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
+                    About Me
+                </RouterLink>
                 <template v-if="auth.isAuthenticated">
-                    <RouterLink to="/dashboard" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/dashboard" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
                         My Articles
                     </RouterLink>
-                    <RouterLink to="/admin/users" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" class="px-3 py-1.5 rounded-lg text-sm font-medium text-ink-soft hover:text-ink hover:bg-paper-warm transition-all" active-class="text-ink bg-paper-warm">
                         Users
                     </RouterLink>
-                    <RouterLink to="/write">
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/write">
                         <BaseButton variant="accent" size="sm">✦ Write</BaseButton>
                     </RouterLink>
 
@@ -40,7 +43,7 @@
                                 </div>
                                 <RouterLink to="/profile" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                                     Profile</RouterLink>
-                                <RouterLink to="/dashboard" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                                <RouterLink to="/dashboard" v-if="auth.user?.role === 'admin'" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                                     Dashboard</RouterLink>
                                 <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="dropdownOpen = false" class="block px-4 py-2.5 text-sm text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                                     Manage Users</RouterLink>
@@ -78,10 +81,12 @@
                 class="md:hidden border-t border-paper-border bg-white px-4 py-3 flex flex-col gap-1">
                 <RouterLink to="/" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                     Explore</RouterLink>
+                <RouterLink to="/aboutMe" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    About Me</RouterLink>
                 <template v-if="auth.isAuthenticated">
-                    <RouterLink to="/write" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/write" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Write Article</RouterLink>
-                    <RouterLink to="/dashboard" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
+                    <RouterLink v-if="auth.user?.role === 'admin'" to="/dashboard" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         My Articles</RouterLink>
                     <RouterLink v-if="auth.user?.role === 'admin'" to="/admin/users" @click="mobileOpen = false" class="px-3 py-2.5 rounded-lg text-sm font-medium text-ink-soft hover:bg-paper-warm hover:text-ink transition-colors">
                         Manage Users</RouterLink>
