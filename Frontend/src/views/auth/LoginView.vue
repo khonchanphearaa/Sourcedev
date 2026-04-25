@@ -37,7 +37,7 @@ const submit = async () => {
     error.value = ''
     if (!email.value || !password.value) { error.value = 'Please fill in all fields.'; return }
     const result = await auth.login(email.value, password.value)
-    if (result.success) router.push('/dashboard')
+    if (result.success) router.push('/')
     else error.value = result.message || 'Login failed'
 }
 </script>
