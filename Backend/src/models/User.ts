@@ -9,6 +9,9 @@ export interface IUser extends Document {
   avatar?: string;
   bio?: string;
   role: 'admin' | 'user';
+  isVerified: boolean;
+  verificationToken?: string;
+  verificationExpires?: Date;
   otp?: string;
   otpExpires?: Date;
   createdAt: Date;
@@ -23,6 +26,9 @@ const userSchema = new Schema<IUser>(
     avatar: { type: String, default: '' },
     bio: { type: String, maxlength: 200, default: '' },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
+    isVerified: {type: Boolean, default: false},
+    verificationToken: {type: String},
+    verificationExpires: {type: Date},
     otp: { type: String },
     otpExpires: { type: Date },
   },
