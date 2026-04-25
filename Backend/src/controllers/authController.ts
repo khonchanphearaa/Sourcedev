@@ -1,31 +1,22 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
 import * as authService from '../services/authService';
 import { sendResponse } from '../utils/response';
 
-const generateToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  } as jwt.SignOptions);
-};
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      res.status(400).json({ success: false, message: 'Please provide all fields' });
-      return;
-    }
-    const { user, token } = await authService.registerAccount(req.body);
+    const { verificationEmailSent } = await authService.registerAccount(req.body);
 
-    res.status(201).json({
-      success: true,
-      message: 'Registration successful',
-      token,
-      user: { id: user._id, name: user.name, email: user.email, bio: user.bio, avatar: user.avatar, role: user.role },
-    });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    if (!verificationEmailSent) {
+      return sendResponse(
+        res,
+        201,
+        'Registration successful, but verification email could not be sent right now. Please authorize your server IP in Brevo and use resend verification.'
+      );
+    }
+
+    return sendResponse(res, 201, 'Registration successful. Please check your email to verify your account.');
+  } catch (error: any) {
+    return sendResponse(res, 500, error.message);
   }
 };
 
@@ -33,17 +24,15 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      res.status(400).json({ success: false, message: 'Please provide email and password' });
-      return;
+      return sendResponse(res, 400, 'Please provide email and password');
     }
 
     const { user, token } = await authService.loginAccount(email, password);
-    return sendResponse(res, 200, 'Login successful', {
-      token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
-    });
+
+    return sendResponse(res, 200, 'Login success', { token, user });
   } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
+    const status = error.message.includes('verify') ? 403 : 401;
+    return sendResponse(res, status, error.message);
   }
 };
 
@@ -69,10 +58,10 @@ export const updateProfile = async (req: Request & { user?: { id: string } }, re
 /* Admin: get all users */
 export const getAllUsers = async (_req: Request, res: Response): Promise<void> => {
   try {
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
-    res.json({ success: true, users });
-  } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+    const users = await authService.getAllUsers();
+    return sendResponse(res, 200, 'Users retrieved', users);
+  } catch (error: any) {
+    return sendResponse(res, 500, error.message);
   }
 };
 
@@ -82,17 +71,35 @@ export const updateUserRole = async (req: Request, res: Response): Promise<void>
   try {
     const { role } = req.body;
     if (!['admin', 'user'].includes(role)) {
-      res.status(400).json({ success: false, message: 'Invalid role' });
-      return;
+      return sendResponse(res, 400, 'Invalid role');
     }
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { role },
-      { new: true }
-    ).select('-password');
-    if (!user) { res.status(404).json({ success: false, message: 'User not found' }); return; }
-    res.json({ success: true, user });
-  } catch {
-    res.status(500).json({ success: false, message: 'Server error' });
+
+    const user = await authService.updateUserRole(req.params.id as string, role);
+    return sendResponse(res, 200, 'Role updated', user);
+  } catch (error: any) {
+    return sendResponse(res, 500, error.message);
   }
 };
+
+export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { token } = req.query;
+    await authService.verifyEmailLink(token as string);
+    return sendResponse(res, 200, 'Email verified successfully');
+  } catch (error: any) {
+    return sendResponse(res, 400, error.message);
+  }
+}
+
+export const resendVerification = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return sendResponse(res, 400, 'Please provide email');
+    }
+    await authService.resendVerificationService(email);
+    return sendResponse(res, 200, 'Verification email resent');
+  } catch (error: any) {
+    return sendResponse(res, 500, error.message);
+  }
+}
