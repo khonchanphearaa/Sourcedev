@@ -1,10 +1,10 @@
-import { randomInt } from "crypto";
-
-interface EmailOptions {
+type EmailOptions = {
     email: string;
     subject: string;
-    otp: string;
-}
+} & (
+        | { otp: string; verificationUrl?: never }
+        | { verificationUrl: string; otp?: never }
+    );
 
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
@@ -29,7 +29,7 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
                 },
                 to: [{ email: options.email }],
                 subject: options.subject,
-                htmlContent: generateEmailTemplate(options.otp),
+                htmlContent: generateEmailTemplate(options),
             }),
         });
 
@@ -47,13 +47,25 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
     }
 };
 
-const generateEmailTemplate = (otp: string): string => `
-  <div style="font-family: sans-serif; text-align: center; padding: 20px; border: 1px solid #eee;">
-    <h2>Password Reset</h2>
-    <p>Your OTP code is:</p>
-    <h1 style="color: #4A90E2; letter-spacing: 5px;">${otp}</h1>
-    <p>This code expires in 5 minutes.</p>
-    <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-    <p style="font-size: 0.8rem; color: #888;">Developed @khonchanphearaa</p>
-  </div>
-`;
+// const generateEmailTemplate = (otp: string): string => `
+//   <div style="font-family: sans-serif; text-align: center; padding: 20px; border: 1px solid #eee;">
+//     <h2>Password Reset</h2>
+//     <p>Your OTP code is:</p>
+//     <h1 style="color: #4A90E2; letter-spacing: 5px;">${otp}</h1>
+//     <p>This code expires in 5 minutes.</p>
+//     <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+//     <p style="font-size: 0.8rem; color: #888;">Developed @khonchanphearaa</p>
+//   </div>
+// `;
+
+const generateEmailTemplate = (options: EmailOptions): string => {
+    const content = "verificationUrl" in options
+        ? `<p>Click below to verify:</p><a href="${options.verificationUrl}" style="background:#4A90E2;color:white;padding:10px 20px;text-decoration:none;">Verify Email</a>`
+        : `<h2>Your OTP: ${options.otp}</h2><p>Expires in 5 minutes.</p>`;
+
+    return `
+      <div style="font-family:sans-serif;text-align:center;padding:20px;border:1px solid #eee;">
+        ${content}
+        <p style="font-size:0.8rem;color:#888;margin-top:20px;">Developed @khonchanphearaa</p>
+      </div>`;
+};
