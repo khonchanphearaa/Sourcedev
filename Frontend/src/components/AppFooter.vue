@@ -7,7 +7,7 @@
                     <span class="text-lg font-serif font-semibold text-ink">Sourcedev</span>
                 </div>
 
-                <p class="mt-1 text-sm text-ink-muted">A quiet place for thoughtful writing.</p>
+                <p class="mt-1 text-sm text-ink-muted">Open source community stdlibs.</p>
             </div>
             <nav class="flex gap-6">
                 <RouterLink to="/" class="text-sm text-ink-muted hover:text-ink transition-colors">Explore</RouterLink>
