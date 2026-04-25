@@ -9,7 +9,7 @@
     "src/**/__tests__/*"
   ],
   "compilerOptions": {
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "noUncheckedIndexedAccess": true,
     "paths": {
       "@/*": [
