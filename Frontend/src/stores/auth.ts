@@ -64,7 +64,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!token.value) return
     try {
       const { data } = await api.get('/auth/me')
-      user.value = normalizeUser(data.user)
+      user.value = normalizeUser(data)
     } catch {
       logout()
     }
@@ -72,7 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const updateProfile = async (payload: Partial<User>) => {
     const { data } = await api.put('/auth/profile', payload)
-    user.value = normalizeUser(data.user)
+    user.value = normalizeUser(data)
     return user.value
   }
 

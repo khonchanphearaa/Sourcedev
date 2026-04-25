@@ -17,7 +17,7 @@ const router = createRouter({
     { path: '/write', component: () => import('@/views/pages/EditorView.vue'), meta: { requiresAuth: true, requiresAdmin: false } },
     { path: '/edit/:id', component: () => import('@/views/pages/EditorView.vue'), meta: { requiresAuth: true } },
     { path: '/profile', component: () => import('@/views/auth/ProfileView.vue'), meta: { requiresAuth: true } },
-    { path: '/aboutMe', component: () => import('@/views/pages/AboutUs.vue'), meta: { requiresAuth: true } },
+    { path: '/aboutMe', component: () => import('@/views/pages/AboutUs.vue') },
     { path: '/:pathMatch(.*)*', component: () => import('@/views/NotFoundView.vue') },
     {path : '/verifyOtp', name: 'verifyOtp', component: VerifyOtp},
     {path : '/reset-password', name: 'reset-password', component: ResetPassword},
