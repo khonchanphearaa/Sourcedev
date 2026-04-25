@@ -11,6 +11,7 @@
             <div>
                 <p class="font-semibold text-ink">{{ auth.user?.name }}</p>
                 <p class="text-sm text-ink-muted font-sans mt-0.5">{{ auth.user?.email }}</p>
+                <p class="text-sm text-ink font-sans mt-0.5">Role {{ auth.user?.role }}</p>
             </div>
         </div>
 
